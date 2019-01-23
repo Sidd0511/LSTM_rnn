@@ -1,6 +1,7 @@
 # TODO: use batch normalisation instead of dropout
 # TODO: Play with timesteps, epochs, batch size, optimiser, scaler, dropout rate
 # TODO: Apply gridSearchCV for parameter testing
+# TODO: Add a validation split in the training dataset
 
 """ Part 1: Data Preprocessing"""
 
@@ -8,8 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pnd
 import h5py
+import tensorboard
 from keras.utils import plot_model
+from datetime import datetime as dt
 
+startTime = dt.now()
 # Importing the dataset
 dataset_train = pnd.read_csv('Google_Stock_Train.csv')
 training_set = dataset_train.iloc[:, [2]].values
@@ -74,10 +78,10 @@ regressor.compile(optimizer='adam', loss='mean_squared_error')
 # rlr = ReduceLROnPlateau(monitor='loss', factor=0.5, patience=5, verbose=1)
 check_point = ModelCheckpoint(filepath='weights.hdf5', monitor='loss', verbose=1, save_best_only=True,
                               save_weights_only=True)
-# tb = TensorBoard()
+tb = TensorBoard()
 
 # Fitting the RNN to training dataset
-regressor.fit(X_train, Y_train, epochs=100, batch_size=32, callbacks=[check_point])
+regressor.fit(X_train, Y_train, epochs=100, batch_size=32, callbacks=[check_point, tb])
 
 """Part 3: Making predictions and visualising the data"""
 
@@ -108,6 +112,9 @@ plt.title('Stock price comparison')
 plt.legend()
 plt.show()
 
+endTime = dt.now()
+
+print("\n Time Taken:", endTime - startTime)
 # import math
 # from sklearn.metrics import mean_squared_error
 #
